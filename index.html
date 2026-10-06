@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>구구단 몬스터 디펜스 대격돌</title>
+    <!-- Tailwind CSS for modern styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Jua&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Jua', sans-serif;
+            touch-action: manipulation;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+        .pop-animation {
+            animation: pop 0.3s ease-out forwards;
+        }
+        @keyframes pop {
+            0% { transform: scale(0.5); opacity: 0; }
+            70% { transform: scale(1.1); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+        .shake {
+            animation: shake 0.4s ease-in-out;
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-8px); }
+            75% { transform: translateX(8px); }
+        }
+        .boss-glow {
+            animation: bossGlow 1s infinite alternate;
+        }
+        @keyframes bossGlow {
+            0% { filter: drop-shadow(0 0 10px rgba(239, 68, 68, 0.8)); }
+            100% { filter: drop-shadow(0 0 25px rgba(239, 68, 68, 1)); }
+        }
+    </style>
+</head>
+<body class="bg-gradient-to-b from-indigo-950 via-purple-950 to-slate-950 text-white min-h-screen flex flex-col items-center justify-between p-3 md:p-4 overflow-hidden">
+
+    <!-- Top Header & Status Bar -->
+    <header class="w-full max-w-4xl flex justify-between items-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-white/20 z-10 text-sm md:text-base">
+        <div class="flex items-center gap-3">
+            <span class="text-xl" id="lives-display">❤️❤️❤️</span>
+            <span class="text-yellow-300">점수: <strong id="score-display">0</strong></span>
+        </div>
+        <div class="flex items-center gap-3 bg-black/30 px-3 py-1 rounded-xl border border-white/10">
+            <span class="text-pink-400 font-bold" id="stage-display">STAGE 1 / 10</span>
+        </div>
+        <button onclick="returnToMenu()" class="bg-red-500 hover:bg-red-600 px-3 py-1 rounded-xl text-white font-bold transition shadow-md active:scale-95 text-sm">
+            메뉴
+        </button>
+    </header>
+
+    <!-- Main Game Arena / Menu Screens -->
+    <main class="w-full max-w-4xl flex-1 flex flex-col items-center justify-center relative my-2">
+
+        <!-- SCREEN 1: Difficulty & Menu Selection -->
+        <div id="menu-screen" class="flex flex-col items-center justify-center bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-2xl border border-white/20 max-w-lg w-full text-center pop-animation">
+            <h2 class="text-3xl md:text-4xl font-bold mb-2 text-yellow-300">🛡️ 구구단 몬스터 디펜스</h2>
+            <p class="text-gray-200 mb-6 text-base md:text-lg">난이도를 선택하고 10개의 스테이지를 클리어하세요!</p>
+            
+            <div class="mb-6 w-full flex flex-col gap-3">
+                <label class="block text-lg text-pink-300 font-semibold mb-1">난이도 선택:</label>
+                
+                <!-- Easy Button -->
+                <button onclick="selectDifficulty('easy')" id="btn-easy" class="w-full bg-green-600/80 hover:bg-green-600 border-2 border-green-400 p-4 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg">
+                    <div>
+                        <div class="text-xl text-green-200">🟢 쉬움 모드</div>
+                        <div class="text-xs text-gray-200 font-normal mt-1">2 ~ 4단 | 몬스터 이동 속도 느림 | 여유로운 시간</div>
+                    </div>
+                    <span class="text-2xl">🌱</span>
+                </button>
+
+                <!-- Normal Button -->
+                <button onclick="selectDifficulty('normal')" id="btn-normal" class="w-full bg-yellow-600/80 hover:bg-yellow-600 border-2 border-yellow-400 p-4 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg ring-4 ring-yellow-300">
+                    <div>
+                        <div class="text-xl text-yellow-200">🟡 보통 모드 (추천)</div>
+                        <div class="text-xs text-gray-200 font-normal mt-1">2 ~ 7단 | 표준 속도 | 균형 잡힌 난이도</div>
+                    </div>
+                    <span class="text-2xl">⭐</span>
+                </button>
+
+                <!-- Hard Button -->
+                <button onclick="selectDifficulty('hard')" id="btn-hard" class="w-full bg-red-600/80 hover:bg-red-600 border-2 border-red-400 p-4 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg">
+                    <div>
+                        <div class="text-xl text-red-200">🔴 어려움 모드</div>
+                        <div class="text-xs text-gray-200 font-normal mt-1">2 ~ 9단 | 빠른 속도 | 도전적인 구구단 마스터</div>
+                    </div>
+                    <span class="text-2xl">🔥</span>
+                </button>
+            </div>
+
+            <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-2xl py-4 rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition">
+                모험 시작하기 🚀
+            </button>
+        </div>
+
+        <!-- SCREEN 2: Active Gameplay Arena -->
+        <div id="game-screen" class="hidden w-full h-[380px] md:h-[450px] bg-slate-950/80 backdrop-blur-md rounded-3xl relative overflow-hidden border-2 border-indigo-500/40 shadow-inner flex flex-col justify-between">
+            
+            <!-- Boss Warning Banner -->
+            <div id="boss-warning" class="absolute inset-x-0 top-4 flex justify-center items-center z-20 pointer-events-none hidden">
+                <div class="bg-red-600/90 text-white font-black text-xl md:text-2xl px-6 py-2 rounded-2xl border-2 border-yellow-300 shadow-2xl animate-bounce">
+                    ⚠️ 강력한 보스 몬스터 등장! ⚠️
+                </div>
+            </div>
+
+            <!-- Monster arena container -->
+            <div id="monster-arena" class="relative w-full h-full"></div>
+
+            <!-- Hero character & status indicator at bottom -->
+            <div class="absolute bottom-2 left-1/2 transform -translate-x-1/2 flex flex-col items-center z-10 pointer-events-none">
+                <div id="hero-avatar" class="text-4xl md:text-5xl animate-pulse">🧙‍♂️🏰</div>
+                <div class="w-32 h-4 bg-indigo-950/90 rounded-full mt-1 border border-indigo-400 overflow-hidden flex items-center justify-center px-1 shadow-md">
+                    <div id="target-indicator" class="text-xs text-yellow-300 font-bold truncate w-full text-center">정답을 입력하세요</div>
+                </div>
+            </div>
+
+            <!-- Danger Line -->
+            <div class="absolute bottom-14 left-0 w-full h-1 bg-red-500/60 border-b border-dashed border-red-500"></div>
+        </div>
+
+    </main>
+
+    <!-- Bottom Interactive Number Keypad (Touch Friendly for Tablets) -->
+    <footer id="keypad-container" class="hidden w-full max-w-lg bg-white/10 backdrop-blur-xl p-3.5 rounded-3xl shadow-2xl border border-white/20 mt-2">
+        <div class="flex items-center justify-between bg-black/50 px-4 py-2 rounded-2xl mb-2.5 border border-white/10">
+            <span class="text-gray-400 text-xs md:text-sm">입력된 정답:</span>
+            <div class="text-2xl md:text-3xl font-extrabold text-yellow-400 tracking-wider min-h-[35px] flex items-center" id="answer-input">_</div>
+        </div>
+
+        <div class="grid grid-cols-3 gap-2.5">
+            <button onclick="pressKey(1)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">1</button>
+            <button onclick="pressKey(2)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">2</button>
+            <button onclick="pressKey(3)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">3</button>
+            <button onclick="pressKey(4)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">4</button>
+            <button onclick="pressKey(5)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">5</button>
+            <button onclick="pressKey(6)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">6</button>
+            <button onclick="pressKey(7)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">7</button>
+            <button onclick="pressKey(8)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">8</button>
+            <button onclick="pressKey(9)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">9</button>
+            <button onclick="clearInput()" class="bg-red-500/80 hover:bg-red-500 active:bg-red-600 text-base font-bold py-3 rounded-2xl transition shadow">지우기</button>
+            <button onclick="pressKey(0)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">0</button>
+            <button onclick="submitAnswer()" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-base font-bold py-3 rounded-2xl transition shadow text-slate-900">확인</button>
+        </div>
+    </footer>
+
+    <!-- Stage Clear / Game Over Modal -->
+    <div id="modal" class="fixed inset-0 bg-black/85 backdrop-blur-sm hidden items-center justify-center z-50 p-4">
+        <div class="bg-slate-900 border-2 border-purple-500/60 p-6 md:p-8 rounded-3xl max-w-md w-full text-center shadow-2xl pop-animation">
+            <div id="modal-icon" class="text-5xl md:text-6xl mb-3">🏆</div>
+            <h3 id="modal-title" class="text-2xl md:text-3xl font-bold mb-2 text-yellow-300">스테이지 클리어!</h3>
+            <p id="modal-desc" class="text-gray-300 mb-6 text-base md:text-lg">멋져요! 다음 스테이지로 도전하세요.</p>
+            <button id="modal-btn" onclick="nextStageOrMenu()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 py-3.5 rounded-xl font-bold text-xl shadow-lg hover:opacity-90 active:scale-95 transition">
+                다음 스테이지로 ➡️
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Game Logic -->
+    <script>
+        // Game State Variables
+        let selectedDifficulty = 'normal'; // easy, normal, hard
+        let currentStage = 1; // 1 to 10
+        let score = 0;
+        let lives = 3;
+        let gameActive = false;
+        let monsters = [];
+        let currentInput = "";
+        let spawnTimer = null;
+        let gameLoopInterval = null;
+        let monsterIdCounter = 0;
+
+        // Stage variables
+        let monstersKilledInStage = 0;
+        let monstersNeededForBoss = 5; // increases per stage
+        let isBossStageActive = false;
+        let activeBoss = null;
+
+        const monsterEmojis = ['👾', '👻', '👺', '👹', '👽', '🦖', '🐉', '🧟'];
+        const bossEmojis = ['👿', '👑🤖', '🐉🔥', '💀👑', '👹🔥'];
+
+        // Web Audio API Synthesizer Sound Effects
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if (!audioCtx) return;
+            if (audioCtx.state === 'suspended') {
+                audioCtx.resume();
+            }
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            let now = audioCtx.currentTime;
+            if (type === 'pop') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(800, now + 0.12);
+                gain.gain.setValueAtTime(0.25, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.12);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } else if (type === 'hit') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(500, now);
+                osc.frequency.exponentialRampToValueAtTime(200, now + 0.18);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.18);
+                osc.start(now);
+                osc.stop(now + 0.18);
+            } else if (type === 'wrong') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(140, now);
+                osc.frequency.linearRampToValueAtTime(90, now + 0.22);
+                gain.gain.setValueAtTime(0.35, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.22);
+                osc.start(now);
+                osc.stop(now + 0.22);
+            } else if (type === 'boss_alert') {
+                osc.type = 'square';
+                osc.frequency.setValueAtTime(220, now);
+                osc.frequency.setValueAtTime(440, now + 0.15);
+                osc.frequency.setValueAtTime(660, now + 0.3);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.5);
+                osc.start(now);
+                osc.stop(now + 0.5);
+            } else if (type === 'victory') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.setValueAtTime(450, now + 0.15);
+                osc.frequency.setValueAtTime(600, now + 0.3);
+                osc.frequency.setValueAtTime(900, now + 0.45);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.7);
+                osc.start(now);
+                osc.stop(now + 0.7);
+            } else if (type === 'gameover') {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(250, now);
+                osc.frequency.linearRampToValueAtTime(60, now + 0.6);
+                gain.gain.setValueAtTime(0.4, now);
+                gain.gain.exponentialRampToValueAtTime(0.01, now + 0.6);
+                osc.start(now);
+                osc.stop(now + 0.6);
+            }
+        }
+
+        // Difficulty Selector
+        function selectDifficulty(diff) {
+            selectedDifficulty = diff;
+            const buttons = ['easy', 'normal', 'hard'];
+            buttons.forEach(d => {
+                const btn = document.getElementById(`btn-${d}`);
+                btn.classList.remove('ring-4', 'ring-yellow-300');
+            });
+            const target = document.getElementById(`btn-${diff}`);
+            target.classList.add('ring-4', 'ring-yellow-300');
+            playSound('pop');
+        }
+
+        // Start Game
+        function startGame() {
+            currentStage = 1;
+            score = 0;
+            lives = 3;
+            initStage();
+
+            document.getElementById('menu-screen').classList.add('hidden');
+            document.getElementById('game-screen').classList.remove('hidden');
+            document.getElementById('keypad-container').classList.remove('hidden');
+        }
+
+        // Initialize Stage
+        function initStage() {
+            monsters = [];
+            document.getElementById('monster-arena').innerHTML = '';
+            monstersKilledInStage = 0;
+            isBossStageActive = false;
+            activeBoss = null;
+            document.getElementById('boss-warning').classList.add('hidden');
+
+            // Difficulty based parameters
+            if (selectedDifficulty === 'easy') {
+                monstersNeededForBoss = 4 + currentStage; // 5 ~ 14
+            } else if (selectedDifficulty === 'normal') {
+                monstersNeededForBoss = 5 + currentStage; // 6 ~ 15
+            } else {
+                monstersNeededForBoss = 6 + currentStage; // 7 ~ 16
+            }
+
+            updateStatusDisplay();
+            gameActive = true;
+
+            // Clear previous timers if any
+            clearInterval(spawnTimer);
+            clearInterval(gameLoopInterval);
+
+            // Set spawn rate based on difficulty
+            let spawnIntervalMs = selectedDifficulty === 'easy' ? 3500 : (selectedDifficulty === 'normal' ? 3000 : 2500);
+            spawnTimer = setInterval(spawnMonster, spawnIntervalMs);
+            gameLoopInterval = setInterval(updateGame, 50);
+
+            // Spawn first monster quickly
+            setTimeout(spawnMonster, 600);
+        }
+
+        // Return to Menu
+        function returnToMenu() {
+            clearInterval(spawnTimer);
+            clearInterval(gameLoopInterval);
+            gameActive = false;
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('game-screen').classList.add('hidden');
+            document.getElementById('keypad-container').classList.add('hidden');
+            document.getElementById('menu-screen').classList.remove('hidden');
+        }
+
+        // Generate Question based on Difficulty and Stage
+        function generateQuestion() {
+            let minDan = 2;
+            let maxDan = 4;
+            if (selectedDifficulty === 'normal') {
+                minDan = 2;
+                maxDan = 7;
+            } else if (selectedDifficulty === 'hard') {
+                minDan = 2;
+                maxDan = 9;
+            }
+
+            // Higher stages introduce higher multipliers or full ranges
+            let dan = Math.floor(Math.random() * (maxDan - minDan + 1)) + minDan;
+            let multiplier = Math.floor(Math.random() * 8) + 2; // 2 to 9
+
+            return {
+                dan: dan,
+                multiplier: multiplier,
+                answer: dan * multiplier,
+                text: `${dan} × ${multiplier}`
+            };
+        }
+
+        // Spawn Regular Monster or Trigger Boss
+        function spawnMonster() {
+            if (!gameActive || isBossStageActive) return;
+
+            // Check if ready for Boss
+            if (monstersKilledInStage >= monstersNeededForBoss) {
+                triggerBoss();
+                return;
+            }
+
+            const arena = document.getElementById('monster-arena');
+            const q = generateQuestion();
+            const id = monsterIdCounter++;
+            const emoji = monsterEmojis[Math.floor(Math.random() * monsterEmojis.length)];
+            const leftPos = Math.floor(Math.random() * 75) + 10;
+
+            const monsterEl = document.createElement('div');
+            monsterEl.id = `monster-${id}`;
+            monsterEl.className = 'absolute flex flex-col items-center transition-transform duration-75 pop-animation';
+            monsterEl.style.left = `${leftPos}%`;
+            monsterEl.style.top = '0px';
+
+            monsterEl.innerHTML = `
+                <div class="bg-white/95 text-slate-900 font-extrabold px-2.5 py-1 rounded-xl text-sm md:text-base shadow-lg border-2 border-indigo-500 mb-1 whitespace-nowrap">
+                    ${q.text} = ?
+                </div>
+                <div class="text-4xl md:text-5xl filter drop-shadow-md animate-bounce">${emoji}</div>
+            `;
+
+            arena.appendChild(monsterEl);
+
+            // Speed formula scaled by difficulty and stage
+            let baseSpeed = selectedDifficulty === 'easy' ? 0.4 : (selectedDifficulty === 'normal' ? 0.6 : 0.8);
+            const speed = baseSpeed + (currentStage * 0.05);
+
+            monsters.push({
+                id: id,
+                element: monsterEl,
+                top: 0,
+                speed: speed,
+                answer: q.answer,
+                isBoss: false
+            });
+        }
+
+        // Trigger Boss Stage
+        function triggerBoss() {
+            isBossStageActive = true;
+            clearInterval(spawnTimer); // Stop regular spawns
+
+            // Clear any remaining regular monsters
+            monsters.forEach(m => m.element.remove());
+            monsters = [];
+
+            playSound('boss_alert');
+            const warningEl = document.getElementById('boss-warning');
+            warningEl.classList.remove('hidden');
+            setTimeout(() => warningEl.classList.add('hidden'), 2500);
+
+            // Create Boss
+            const arena = document.getElementById('monster-arena');
+            const q = generateQuestion();
+            const id = monsterIdCounter++;
+            const bossEmoji = bossEmojis[Math.floor(Math.random() * bossEmojis.length)];
+            
+            // Boss HP depends on stage (e.g. stage 1 = 3 HP, stage 10 = 6 HP)
+            const bossMaxHp = Math.min(3 + Math.floor(currentStage / 2), 7);
+
+            const bossEl = document.createElement('div');
+            bossEl.id = `boss-${id}`;
+            bossEl.className = 'absolute flex flex-col items-center transition-transform duration-75 pop-animation boss-glow left-1/2 transform -translate-x-1/2';
+            bossEl.style.top = '20px';
+
+            bossEl.innerHTML = `
+                <div class="bg-red-600 text-white font-black px-3 py-1 rounded-xl text-sm md:text-base shadow-xl border-2 border-yellow-300 mb-1 whitespace-nowrap flex items-center gap-2">
+                    <span id="boss-hp-text">HP: ${bossMaxHp}/${bossMaxHp}</span> | <span>${q.text} = ?</span>
+                </div>
+                <div class="text-6xl md:text-7xl filter drop-shadow-2xl animate-pulse">${bossEmoji}</div>
+            `;
+
+            arena.appendChild(bossEl);
+
+            let baseBossSpeed = selectedDifficulty === 'easy' ? 0.25 : (selectedDifficulty === 'normal' ? 0.35 : 0.5);
+
+            activeBoss = {
+                id: id,
+                element: bossEl,
+                top: 20,
+                speed: baseBossSpeed + (currentStage * 0.03),
+                answer: q.answer,
+                hp: bossMaxHp,
+                maxHp: bossMaxHp,
+                currentQ: q
+            };
+        }
+
+        // Main Game Update Loop
+        function updateGame() {
+            if (!gameActive) return;
+
+            const arenaHeight = document.getElementById('game-screen').clientHeight - 85;
+
+            // Regular monsters update
+            if (!isBossStageActive) {
+                for (let i = monsters.length - 1; i >= 0; i--) {
+                    let m = monsters[i];
+                    m.top += m.speed;
+                    m.element.style.top = `${m.top}px`;
+
+                    if (m.top >= arenaHeight) {
+                        m.element.remove();
+                        monsters.splice(i, 1);
+                        lives--;
+                        updateStatusDisplay();
+                        playSound('wrong');
+                        triggerShake();
+
+                        if (lives <= 0) {
+                            endGame(false);
+                        }
+                        break;
+                    }
+                }
+            } 
+            // Boss update
+            else if (activeBoss) {
+                activeBoss.top += activeBoss.speed;
+                activeBoss.element.style.top = `${activeBoss.top}px`;
+
+                if (activeBoss.top >= arenaHeight - 30) {
+                    activeBoss.element.remove();
+                    activeBoss = null;
+                    lives--;
+                    updateStatusDisplay();
+                    playSound('wrong');
+                    triggerShake();
+
+                    if (lives <= 0) {
+                        endGame(false);
+                    } else {
+                        // Respawn boss question if he reached danger line but still has lives
+                        triggerBoss();
+                    }
+                }
+            }
+        }
+
+        // Screen Shake Effect
+        function triggerShake() {
+            const screen = document.getElementById('game-screen');
+            screen.classList.add('shake');
+            setTimeout(() => screen.classList.remove('shake'), 400);
+        }
+
+        // Keypad Inputs
+        function pressKey(num) {
+            if (!gameActive) return;
+            if (currentInput.length >= 3) return;
+            currentInput += num.toString();
+            updateInputDisplay();
+            playSound('pop');
+        }
+
+        function clearInput() {
+            if (!gameActive) return;
+            currentInput = "";
+            updateInputDisplay();
+            playSound('pop');
+        }
+
+        function updateInputDisplay() {
+            document.getElementById('answer-input').innerText = currentInput === "" ? "_" : currentInput;
+        }
+
+        // Submit Answer & Check against active monsters or boss
+        function submitAnswer() {
+            if (!gameActive || currentInput === "") return;
+
+            const typedNum = parseInt(currentInput, 10);
+            const indicator = document.getElementById('target-indicator');
+
+            // If Boss is active
+            if (isBossStageActive && activeBoss) {
+                if (activeBoss.answer === typedNum) {
+                    // Boss Hit!
+                    activeBoss.hp--;
+                    playSound('hit');
+                    score += 25;
+                    updateStatusDisplay();
+
+                    if (activeBoss.hp <= 0) {
+                        // Boss Defeated!
+                        activeBoss.element.style.transform = 'scale(1.5) rotate(20deg)';
+                        activeBoss.element.style.opacity = '0';
+                        setTimeout(() => activeBoss.element.remove(), 250);
+                        activeBoss = null;
+                        isBossStageActive = false;
+
+                        // Check if final stage (Stage 10) completed
+                        if (currentStage >= 10) {
+                            endGame(true);
+                        } else {
+                            showStageClearModal();
+                        }
+                    } else {
+                        // Generate new question for boss
+                        const newQ = generateQuestion();
+                        activeBoss.answer = newQ.answer;
+                        activeBoss.currentQ = newQ;
+                        
+                        // Update boss HTML text
+                        const hpText = activeBoss.element.querySelector('#boss-hp-text');
+                        if (hpText) {
+                            hpText.innerText = `HP: ${activeBoss.hp}/${activeBoss.maxHp}`;
+                        }
+                        const qBox = activeBoss.element.querySelector('div > div:first-child');
+                        // Update question text inside boss header
+                        activeBoss.element.innerHTML = `
+                            <div class="bg-red-600 text-white font-black px-3 py-1 rounded-xl text-sm md:text-base shadow-xl border-2 border-yellow-300 mb-1 whitespace-nowrap flex items-center gap-2">
+                                <span id="boss-hp-text">HP: ${activeBoss.hp}/${activeBoss.maxHp}</span> | <span>${newQ.text} = ?</span>
+                            </div>
+                            <div class="text-6xl md:text-7xl filter drop-shadow-2xl animate-pulse">🐉🔥</div>
+                        `;
+                        indicator.innerText = "보스 명중! 🎯";
+                        setTimeout(() => indicator.innerText = "정답을 입력하세요", 600);
+                    }
+                } else {
+                    playSound('wrong');
+                    triggerShake();
+                    indicator.innerText = "오답! ❌";
+                    setTimeout(() => indicator.innerText = "정답을 입력하세요", 600);
+                }
+            } 
+            // Regular monsters active
+            else {
+                let matchedIndex = -1;
+                for (let i = 0; i < monsters.length; i++) {
+                    if (monsters[i].answer === typedNum) {
+                        matchedIndex = i;
+                        break;
+                    }
+                }
+
+                if (matchedIndex !== -1) {
+                    const m = monsters[matchedIndex];
+                    m.element.style.transform = 'scale(1.4) rotate(15deg)';
+                    m.element.style.opacity = '0';
+                    setTimeout(() => m.element.remove(), 200);
+
+                    monsters.splice(matchedIndex, 1);
+                    score += 10;
+                    monstersKilledInStage++;
+                    updateStatusDisplay();
+                    playSound('hit');
+
+                    indicator.innerText = "정답! 🎯";
+                    setTimeout(() => indicator.innerText = "정답을 입력하세요", 600);
+                } else {
+                    playSound('wrong');
+                    triggerShake();
+                    indicator.innerText = "오답! ❌";
+                    setTimeout(() => indicator.innerText = "정답을 입력하세요", 600);
+                }
+            }
+
+            currentInput = "";
+            updateInputDisplay();
+        }
+
+        // Keyboard support for desktop testing
+        window.addEventListener('keydown', (e) => {
+            if (!gameActive) return;
+            if (e.key >= '0' && e.key <= '9') {
+                pressKey(parseInt(e.key, 10));
+            } else if (e.key === 'Backspace' || e.key === 'Escape') {
+                clearInput();
+            } else if (e.key === 'Enter') {
+                submitAnswer();
+            }
+        });
+
+        // Update Status Badges
+        function updateStatusDisplay() {
+            let hearts = "";
+            for (let i = 0; i < lives; i++) hearts += "❤️";
+            document.getElementById('lives-display').innerText = hearts;
+            document.getElementById('score-display').innerText = score;
+            document.getElementById('stage-display').innerText = `STAGE ${currentStage} / 10`;
+        }
+
+        // Show Stage Clear Modal
+        function showStageClearModal() {
+            gameActive = false;
+            clearInterval(spawnTimer);
+            clearInterval(gameLoopInterval);
+            playSound('victory');
+
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+            const icon = document.getElementById('modal-icon');
+            const btn = document.getElementById('modal-btn');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            icon.innerText = '⭐';
+            title.innerText = `스테이지 ${currentStage} 클리어!`;
+            desc.innerText = `보스를 물리쳤습니다! 다음 스테이지로 도전하세요. (현재 점수: ${score}점)`;
+            btn.innerText = '다음 스테이지로 ➡️';
+            btn.onclick = advanceToNextStage;
+        }
+
+        function advanceToNextStage() {
+            currentStage++;
+            document.getElementById('modal').classList.add('hidden');
+            document.getElementById('modal').classList.remove('flex');
+            initStage();
+        }
+
+        function nextStageOrMenu() {
+            // Used by modal default
+        }
+
+        // End Game Modal (Victory / Game Over)
+        function endGame(isVictory) {
+            gameActive = false;
+            clearInterval(spawnTimer);
+            clearInterval(gameLoopInterval);
+            playSound(isVictory ? 'victory' : 'gameover');
+
+            const modal = document.getElementById('modal');
+            const title = document.getElementById('modal-title');
+            const desc = document.getElementById('modal-desc');
+            const icon = document.getElementById('modal-icon');
+            const btn = document.getElementById('modal-btn');
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+
+            if (isVictory) {
+                icon.innerText = '👑';
+                title.innerText = '축하합니다! 최종 승리!';
+                desc.innerText = `10개의 스테이지를 모두 클리어했습니다!\n최종 점수: ${score}점`;
+            } else {
+                icon.innerText = '💥';
+                title.innerText = '게임 오버!';
+                desc.innerText = `아쉽네요! 스테이지 ${currentStage}에서 멈췄습니다.\n최종 점수: ${score}점`;
+            }
+
+            btn.innerText = '메인 메뉴로 돌아가기';
+            btn.onclick = returnToMenu;
+        }
+    </script>
+</body>
+</html>
