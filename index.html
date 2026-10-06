@@ -39,10 +39,10 @@
         }
     </style>
 </head>
-<body class="bg-gradient-to-b from-indigo-950 via-purple-950 to-slate-950 text-white min-h-screen flex flex-col items-center justify-between p-3 md:p-4 overflow-hidden">
+<body class="bg-gradient-to-br from-indigo-950 via-purple-950 to-slate-950 text-white min-h-screen flex flex-col items-center justify-between p-3 sm:p-4 overflow-y-auto">
 
     <!-- Top Header & Status Bar -->
-    <header class="w-full max-w-4xl flex justify-between items-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-white/20 z-10 text-sm md:text-base">
+    <header class="w-full max-w-4xl flex justify-between items-center bg-white/10 backdrop-blur-md px-4 py-2.5 rounded-2xl shadow-lg border border-white/20 z-10 text-sm md:text-base my-2">
         <div class="flex items-center gap-3">
             <span class="text-xl" id="lives-display">❤️❤️❤️</span>
             <span class="text-yellow-300">점수: <strong id="score-display">0</strong></span>
@@ -55,56 +55,56 @@
         </button>
     </header>
 
-    <!-- Main Game Arena / Menu Screens -->
+    <!-- Main Game Arena / Menu Screens Container -->
     <main class="w-full max-w-4xl flex-1 flex flex-col items-center justify-center relative my-2">
 
-        <!-- SCREEN 1: Difficulty & Menu Selection -->
-        <div id="menu-screen" class="flex flex-col items-center justify-center bg-white/10 backdrop-blur-xl p-6 md:p-8 rounded-3xl shadow-2xl border border-white/20 max-w-lg w-full text-center pop-animation">
-            <h2 class="text-3xl md:text-4xl font-bold mb-2 text-yellow-300">🛡️ 구구단 몬스터 디펜스</h2>
-            <p class="text-gray-200 mb-6 text-base md:text-lg">난이도를 선택하고 10개의 스테이지를 클리어하세요!</p>
+        <!-- SCREEN 1: Difficulty & Menu Selection (Responsive & Scrollable) -->
+        <div id="menu-screen" class="flex flex-col items-center justify-center bg-white/10 backdrop-blur-xl p-5 sm:p-8 rounded-3xl shadow-2xl border border-white/20 max-w-lg w-full text-center pop-animation my-auto">
+            <h2 class="text-2xl sm:text-3xl md:text-4xl font-bold mb-2 text-yellow-300">🛡️ 구구단 몬스터 디펜스</h2>
+            <p class="text-gray-200 mb-5 text-sm sm:text-base md:text-lg">난이도를 선택하고 10개의 스테이지를 클리어하세요!</p>
             
-            <div class="mb-6 w-full flex flex-col gap-3">
-                <label class="block text-lg text-pink-300 font-semibold mb-1">난이도 선택:</label>
+            <div class="mb-5 w-full flex flex-col gap-2.5">
+                <label class="block text-base sm:text-lg text-pink-300 font-semibold mb-1">난이도 선택:</label>
                 
                 <!-- Easy Button -->
-                <button onclick="selectDifficulty('easy')" id="btn-easy" class="w-full bg-green-600/80 hover:bg-green-600 border-2 border-green-400 p-4 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg">
+                <button onclick="selectDifficulty('easy')" id="btn-easy" class="w-full bg-green-600/80 hover:bg-green-600 border-2 border-green-400 p-3.5 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg">
                     <div>
-                        <div class="text-xl text-green-200">🟢 쉬움 모드</div>
-                        <div class="text-xs text-gray-200 font-normal mt-1">2 ~ 4단 | 몬스터 이동 속도 느림 | 여유로운 시간</div>
+                        <div class="text-lg sm:text-xl text-green-200">🟢 쉬움 모드</div>
+                        <div class="text-xs text-gray-200 font-normal mt-0.5">2 ~ 4단 | 몬스터 이동 속도 느림</div>
                     </div>
                     <span class="text-2xl">🌱</span>
                 </button>
 
                 <!-- Normal Button -->
-                <button onclick="selectDifficulty('normal')" id="btn-normal" class="w-full bg-yellow-600/80 hover:bg-yellow-600 border-2 border-yellow-400 p-4 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg ring-4 ring-yellow-300">
+                <button onclick="selectDifficulty('normal')" id="btn-normal" class="w-full bg-yellow-600/80 hover:bg-yellow-600 border-2 border-yellow-400 p-3.5 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg ring-4 ring-yellow-300">
                     <div>
-                        <div class="text-xl text-yellow-200">🟡 보통 모드 (추천)</div>
-                        <div class="text-xs text-gray-200 font-normal mt-1">2 ~ 7단 | 표준 속도 | 균형 잡힌 난이도</div>
+                        <div class="text-lg sm:text-xl text-yellow-200">🟡 보통 모드 (추천)</div>
+                        <div class="text-xs text-gray-200 font-normal mt-0.5">2 ~ 7단 | 표준 속도 | 균형 잡힌 난이도</div>
                     </div>
                     <span class="text-2xl">⭐</span>
                 </button>
 
                 <!-- Hard Button -->
-                <button onclick="selectDifficulty('hard')" id="btn-hard" class="w-full bg-red-600/80 hover:bg-red-600 border-2 border-red-400 p-4 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg">
+                <button onclick="selectDifficulty('hard')" id="btn-hard" class="w-full bg-red-600/80 hover:bg-red-600 border-2 border-red-400 p-3.5 rounded-2xl font-bold text-left transition active:scale-95 flex justify-between items-center shadow-lg">
                     <div>
-                        <div class="text-xl text-red-200">🔴 어려움 모드</div>
-                        <div class="text-xs text-gray-200 font-normal mt-1">2 ~ 9단 | 빠른 속도 | 도전적인 구구단 마스터</div>
+                        <div class="text-lg sm:text-xl text-red-200">🔴 어려움 모드</div>
+                        <div class="text-xs text-gray-200 font-normal mt-0.5">2 ~ 9단 | 빠른 속도 | 구구단 마스터 도전</div>
                     </div>
                     <span class="text-2xl">🔥</span>
                 </button>
             </div>
 
-            <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-2xl py-4 rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition">
+            <button onclick="startGame()" class="w-full bg-gradient-to-r from-purple-500 to-pink-500 text-white font-extrabold text-xl sm:text-2xl py-3.5 sm:py-4 rounded-2xl shadow-xl hover:brightness-110 active:scale-95 transition">
                 모험 시작하기 🚀
             </button>
         </div>
 
         <!-- SCREEN 2: Active Gameplay Arena -->
-        <div id="game-screen" class="hidden w-full h-[380px] md:h-[450px] bg-slate-950/80 backdrop-blur-md rounded-3xl relative overflow-hidden border-2 border-indigo-500/40 shadow-inner flex flex-col justify-between">
+        <div id="game-screen" class="hidden w-full h-[360px] sm:h-[420px] md:h-[480px] bg-slate-950/80 backdrop-blur-md rounded-3xl relative overflow-hidden border-2 border-indigo-500/40 shadow-inner flex flex-col justify-between">
             
             <!-- Boss Warning Banner -->
             <div id="boss-warning" class="absolute inset-x-0 top-4 flex justify-center items-center z-20 pointer-events-none hidden">
-                <div class="bg-red-600/90 text-white font-black text-xl md:text-2xl px-6 py-2 rounded-2xl border-2 border-yellow-300 shadow-2xl animate-bounce">
+                <div class="bg-red-600/90 text-white font-black text-lg sm:text-xl md:text-2xl px-5 py-2 rounded-2xl border-2 border-yellow-300 shadow-2xl animate-bounce">
                     ⚠️ 강력한 보스 몬스터 등장! ⚠️
                 </div>
             </div>
@@ -127,25 +127,25 @@
     </main>
 
     <!-- Bottom Interactive Number Keypad (Touch Friendly for Tablets) -->
-    <footer id="keypad-container" class="hidden w-full max-w-lg bg-white/10 backdrop-blur-xl p-3.5 rounded-3xl shadow-2xl border border-white/20 mt-2">
+    <footer id="keypad-container" class="hidden w-full max-w-lg bg-white/10 backdrop-blur-xl p-3 sm:p-4 rounded-3xl shadow-2xl border border-white/20 my-2">
         <div class="flex items-center justify-between bg-black/50 px-4 py-2 rounded-2xl mb-2.5 border border-white/10">
             <span class="text-gray-400 text-xs md:text-sm">입력된 정답:</span>
             <div class="text-2xl md:text-3xl font-extrabold text-yellow-400 tracking-wider min-h-[35px] flex items-center" id="answer-input">_</div>
         </div>
 
-        <div class="grid grid-cols-3 gap-2.5">
-            <button onclick="pressKey(1)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">1</button>
-            <button onclick="pressKey(2)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">2</button>
-            <button onclick="pressKey(3)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">3</button>
-            <button onclick="pressKey(4)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">4</button>
-            <button onclick="pressKey(5)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">5</button>
-            <button onclick="pressKey(6)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">6</button>
-            <button onclick="pressKey(7)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">7</button>
-            <button onclick="pressKey(8)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">8</button>
-            <button onclick="pressKey(9)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">9</button>
-            <button onclick="clearInput()" class="bg-red-500/80 hover:bg-red-500 active:bg-red-600 text-base font-bold py-3 rounded-2xl transition shadow">지우기</button>
-            <button onclick="pressKey(0)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-3 rounded-2xl transition shadow">0</button>
-            <button onclick="submitAnswer()" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-base font-bold py-3 rounded-2xl transition shadow text-slate-900">확인</button>
+        <div class="grid grid-cols-3 gap-2 sm:gap-2.5">
+            <button onclick="pressKey(1)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">1</button>
+            <button onclick="pressKey(2)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">2</button>
+            <button onclick="pressKey(3)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">3</button>
+            <button onclick="pressKey(4)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">4</button>
+            <button onclick="pressKey(5)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">5</button>
+            <button onclick="pressKey(6)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">6</button>
+            <button onclick="pressKey(7)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">7</button>
+            <button onclick="pressKey(8)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">8</button>
+            <button onclick="pressKey(9)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">9</button>
+            <button onclick="clearInput()" class="bg-red-500/80 hover:bg-red-500 active:bg-red-600 text-sm sm:text-base font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">지우기</button>
+            <button onclick="pressKey(0)" class="bg-white/15 hover:bg-white/25 active:bg-white/40 text-2xl font-bold py-2.5 sm:py-3 rounded-2xl transition shadow">0</button>
+            <button onclick="submitAnswer()" class="bg-green-500 hover:bg-green-600 active:bg-green-700 text-sm sm:text-base font-bold py-2.5 sm:py-3 rounded-2xl transition shadow text-slate-900">확인</button>
         </div>
     </footer>
 
@@ -177,7 +177,7 @@
 
         // Stage variables
         let monstersKilledInStage = 0;
-        let monstersNeededForBoss = 5; // increases per stage
+        let monstersNeededForBoss = 5;
         let isBossStageActive = false;
         let activeBoss = null;
 
@@ -285,28 +285,24 @@
             activeBoss = null;
             document.getElementById('boss-warning').classList.add('hidden');
 
-            // Difficulty based parameters
             if (selectedDifficulty === 'easy') {
-                monstersNeededForBoss = 4 + currentStage; // 5 ~ 14
+                monstersNeededForBoss = 4 + currentStage;
             } else if (selectedDifficulty === 'normal') {
-                monstersNeededForBoss = 5 + currentStage; // 6 ~ 15
+                monstersNeededForBoss = 5 + currentStage;
             } else {
-                monstersNeededForBoss = 6 + currentStage; // 7 ~ 16
+                monstersNeededForBoss = 6 + currentStage;
             }
 
             updateStatusDisplay();
             gameActive = true;
 
-            // Clear previous timers if any
             clearInterval(spawnTimer);
             clearInterval(gameLoopInterval);
 
-            // Set spawn rate based on difficulty
             let spawnIntervalMs = selectedDifficulty === 'easy' ? 3500 : (selectedDifficulty === 'normal' ? 3000 : 2500);
             spawnTimer = setInterval(spawnMonster, spawnIntervalMs);
             gameLoopInterval = setInterval(updateGame, 50);
 
-            // Spawn first monster quickly
             setTimeout(spawnMonster, 600);
         }
 
@@ -333,9 +329,8 @@
                 maxDan = 9;
             }
 
-            // Higher stages introduce higher multipliers or full ranges
             let dan = Math.floor(Math.random() * (maxDan - minDan + 1)) + minDan;
-            let multiplier = Math.floor(Math.random() * 8) + 2; // 2 to 9
+            let multiplier = Math.floor(Math.random() * 8) + 2;
 
             return {
                 dan: dan,
@@ -349,7 +344,6 @@
         function spawnMonster() {
             if (!gameActive || isBossStageActive) return;
 
-            // Check if ready for Boss
             if (monstersKilledInStage >= monstersNeededForBoss) {
                 triggerBoss();
                 return;
@@ -376,7 +370,6 @@
 
             arena.appendChild(monsterEl);
 
-            // Speed formula scaled by difficulty and stage
             let baseSpeed = selectedDifficulty === 'easy' ? 0.4 : (selectedDifficulty === 'normal' ? 0.6 : 0.8);
             const speed = baseSpeed + (currentStage * 0.05);
 
@@ -393,9 +386,8 @@
         // Trigger Boss Stage
         function triggerBoss() {
             isBossStageActive = true;
-            clearInterval(spawnTimer); // Stop regular spawns
+            clearInterval(spawnTimer);
 
-            // Clear any remaining regular monsters
             monsters.forEach(m => m.element.remove());
             monsters = [];
 
@@ -404,13 +396,10 @@
             warningEl.classList.remove('hidden');
             setTimeout(() => warningEl.classList.add('hidden'), 2500);
 
-            // Create Boss
             const arena = document.getElementById('monster-arena');
             const q = generateQuestion();
             const id = monsterIdCounter++;
             const bossEmoji = bossEmojis[Math.floor(Math.random() * bossEmojis.length)];
-            
-            // Boss HP depends on stage (e.g. stage 1 = 3 HP, stage 10 = 6 HP)
             const bossMaxHp = Math.min(3 + Math.floor(currentStage / 2), 7);
 
             const bossEl = document.createElement('div');
@@ -447,7 +436,6 @@
 
             const arenaHeight = document.getElementById('game-screen').clientHeight - 85;
 
-            // Regular monsters update
             if (!isBossStageActive) {
                 for (let i = monsters.length - 1; i >= 0; i--) {
                     let m = monsters[i];
@@ -468,9 +456,7 @@
                         break;
                     }
                 }
-            } 
-            // Boss update
-            else if (activeBoss) {
+            } else if (activeBoss) {
                 activeBoss.top += activeBoss.speed;
                 activeBoss.element.style.top = `${activeBoss.top}px`;
 
@@ -485,7 +471,6 @@
                     if (lives <= 0) {
                         endGame(false);
                     } else {
-                        // Respawn boss question if he reached danger line but still has lives
                         triggerBoss();
                     }
                 }
@@ -526,42 +511,30 @@
             const typedNum = parseInt(currentInput, 10);
             const indicator = document.getElementById('target-indicator');
 
-            // If Boss is active
             if (isBossStageActive && activeBoss) {
                 if (activeBoss.answer === typedNum) {
-                    // Boss Hit!
                     activeBoss.hp--;
                     playSound('hit');
                     score += 25;
                     updateStatusDisplay();
 
                     if (activeBoss.hp <= 0) {
-                        // Boss Defeated!
                         activeBoss.element.style.transform = 'scale(1.5) rotate(20deg)';
                         activeBoss.element.style.opacity = '0';
                         setTimeout(() => activeBoss.element.remove(), 250);
                         activeBoss = null;
                         isBossStageActive = false;
 
-                        // Check if final stage (Stage 10) completed
                         if (currentStage >= 10) {
                             endGame(true);
                         } else {
                             showStageClearModal();
                         }
                     } else {
-                        // Generate new question for boss
                         const newQ = generateQuestion();
                         activeBoss.answer = newQ.answer;
                         activeBoss.currentQ = newQ;
                         
-                        // Update boss HTML text
-                        const hpText = activeBoss.element.querySelector('#boss-hp-text');
-                        if (hpText) {
-                            hpText.innerText = `HP: ${activeBoss.hp}/${activeBoss.maxHp}`;
-                        }
-                        const qBox = activeBoss.element.querySelector('div > div:first-child');
-                        // Update question text inside boss header
                         activeBoss.element.innerHTML = `
                             <div class="bg-red-600 text-white font-black px-3 py-1 rounded-xl text-sm md:text-base shadow-xl border-2 border-yellow-300 mb-1 whitespace-nowrap flex items-center gap-2">
                                 <span id="boss-hp-text">HP: ${activeBoss.hp}/${activeBoss.maxHp}</span> | <span>${newQ.text} = ?</span>
@@ -577,9 +550,7 @@
                     indicator.innerText = "오답! ❌";
                     setTimeout(() => indicator.innerText = "정답을 입력하세요", 600);
                 }
-            } 
-            // Regular monsters active
-            else {
+            } else {
                 let matchedIndex = -1;
                 for (let i = 0; i < monsters.length; i++) {
                     if (monsters[i].answer === typedNum) {
@@ -665,9 +636,7 @@
             initStage();
         }
 
-        function nextStageOrMenu() {
-            // Used by modal default
-        }
+        function nextStageOrMenu() {}
 
         // End Game Modal (Victory / Game Over)
         function endGame(isVictory) {
